@@ -5,7 +5,6 @@ to_const alternative for move trigger usage. much more group efficient in large 
 ## Limitation & Issue      
 
 - **Limited to move trigger X and Y value**
-- **Has weird syntax**
 - **Delay**  
     toConstMove isn't instant, the more value you use, the longer it take to execute  
     **Range size = |a-b| in a..b**  
@@ -15,11 +14,14 @@ to_const alternative for move trigger usage. much more group efficient in large 
     etc   
 - **Range limited to 4095**  
     will be fixed once while loop is implemented
-    you can increase it is by simply modifying the file
+    you can increase it is by adding a value in the file
 - **Posible issue when range low value is a number of power 2 (2,4,8,16,etc)**  
     might problematic :   
     **8**..90  
     68..**32**  
+- **Small jitter when the low value is negative**  
+    if the move duration is 0 the obj will teleport to somewhere else for 1 frame before going to destination  
+    else, the obj will jitter while moving (noticable when the obj supposed to not moving)  
 
 ## Syntax
 
