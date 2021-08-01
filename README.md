@@ -19,7 +19,7 @@ to_const alternative for move trigger usage. much more group efficient in large 
     might problematic :   
     **8**..90  
     68..**32**  
-- **Small jitter when the low value is negative**
+- **Small jitter when the low value is negative**  
     if the move duration is 0 the obj will teleport to somewhere else for 1 frame before going to destination
     else, the obj will jitter while moving (noticable when the obj supposed to not moving)
 
@@ -88,8 +88,8 @@ wait(0.5)
 2g.move(0,10,0)
 ```
 
->__you can find more on example file inside__  
-and if you have difficulty implementing this in your code, you can contact me on discord Reamuji#9847 or tag me in the SPWN Server. im not a busy person
+>__you can find more inside the example file__  
+and if you have difficulty implementing this in your code, you can contact me on discord Reamuji#9847 or tag me in the SPWN Server. but im not sure ill always be there
 
 ## Brief technical explanation
 
