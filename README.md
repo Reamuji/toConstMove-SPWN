@@ -20,7 +20,7 @@ to_const alternative for move trigger usage. much more group efficient in large 
     **8**..90  
     68..**32**  
 - **Small jitter when the low value is negative**  
-    if the move duration is 0 the obj will teleport to somewhere else for 1 frame before going to destination
+    if the move duration is 0 the obj will teleport to somewhere else for 1 frame before going to destination  
     else, the obj will jitter while moving (noticable when the obj supposed to not moving)
 
 >if you only need to implement it in a small range. to_const might be better for you.
