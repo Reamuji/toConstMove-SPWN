@@ -19,9 +19,11 @@ to_const alternative for move trigger usage. much more group efficient in large 
     might problematic :   
     **8**..90  
     68..**32**  
-- **Small jitter when the low value is negative**  
-    if the move duration is 0 the obj will teleport to somewhere else for 1 frame before going to destination  
-    else, the obj will jitter while moving (noticable when the obj supposed to not moving)  
+- **Small jitter when the low value is negative**
+    if the move duration is 0 the obj will teleport to somewhere else for 1 frame before going to destination
+    else, the obj will jitter while moving (noticable when the obj supposed to not moving)
+
+>if you only need to implement it in a small range. to_const might be better for you.
 
 ## Syntax
 
@@ -30,7 +32,7 @@ There are 2 rules in this function usage :
 1. you have to put it inside it's own function.  
 2. you have to add '->' when executing the function.  
 
-##### Syntax :
+#### Syntax :
 
 ```spwn
 functionName =(){
@@ -113,13 +115,12 @@ we know that sum member would be 2^i, so we could generate move trigger wih valu
 
 the actual code skip a lot of step for efficiency, but that basically how it's work
 
-### Why can't you use it on another trigger
+### Why i can't use it on other trigger ?
 
 **Short answer :**  
 trigger behavior  
 
 **Long answer :**  
 when activating a bunch of trigger with same type and same group target, only move trigger would stack the value.  
-other trigger would just execute one trigger, you need to assign multiple group to an obj for other trigger.  
-while it's still more group efficient than to_const, the function would be complicated to make and use  
-it just not practical
+other trigger would just execute one trigger,maybe randomly chosen, idk. you need to assign multiple group to the target obj to do it.  
+even though it's still more group efficient than to_const, the function would be complicated to make and use
