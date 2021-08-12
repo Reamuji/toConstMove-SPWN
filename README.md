@@ -1,5 +1,7 @@
 # toConstMove-SPWN
 
+**note : not compatible with spwn version  0.6 and above**
+
 to_const alternative for move trigger usage. much more group efficient in large scale compared to the OG one
 
 ## Limitation & Issue      
