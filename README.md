@@ -1,170 +1,115 @@
 # toConstMove-SPWN
 
-**note : not compatible with spwn version  0.6 and above**
+to_const alternative for move trigger usage. much more group efficient in large scale compared to the OG one  
+>Recomended for range with size 32 and above  
+if you only need to implement it in a small range, to_const is better.  
 
-to_const alternative for move trigger usage. much more group efficient in large scale compared to the OG one
-
-## Limitation & Issue      
+## Limitation     
 
 - **Limited to move trigger X and Y value**
-- **Delay**  
-    toConstMove isn't instant. the more value you use, the longer it take to execute  
-    **Range size = |a-b| in a..b**  
-    it took 0.55 second for 2048 and above range size  
-    0.5 for 1024 - 2047 range size  
-    0.45 for 512 - 1023 range size  
-    etc   
-    but it's constant, which mean you can add a wait() in your program if you want to move something alses at the same time
-- **Range limited to 4095**  
-    will be fixed once while loop is implemented  
-    you can increase it is by adding a value in the file
-#### Issue in specific case      
-- **Posible issue when range low value is a number of power 2 (2,4,8,16,etc)**  
-    might problematic :   
-    **8**..90  
-    68..**32**  
-- **Small jitter when the low value is negative**  
-    if the move duration is 0 the obj will teleport to somewhere else for 1 frame before going to destination  
-    else, the obj will jitter while moving (noticable when the obj supposed to not moving)  
-- **You have to seperate the move() in some cases**  
-    if the move() x or y parameter is not 0 or a 'toConstMove' return, it might need to be seperated.  
+- **Small jitter when the low value in range is negative and the move duration isn't 0**  
+    in that case, the obj will jitter while moving. but will only noticable when the move value is low or 0  
+    it's actually consequence of how move in GD work. it can't be fixed while keeping current method  
+- **The other coordinate value have to be 0**
     ```spwn
-    counter = count.toConstMove(..100)
-    1g.move(counter + 10,5,1)
-    ```
-    is not allowed. because both the 'counter + 10' and '5'. but '1' is okay, because it's for the duration parameter.  
-    i will explain it further below
+    1g.move(count.toConstMove(0..100), 10, 1)
+    ```  
+    in ths case, the ```X = count.toConstMove(0..100)``` and ```Y = 10```.  
+    this isn't allowed. the Y have to be 0. if you want, you can do this instead 
+    ```rs
+    -> 1g.move(count.toConstMove(..100),0,1)
+        // we add '->' so both move activated together
+    1g.move(0,10,1)
+    ```  
+- **You can't do non distributive transformation to the value**  
+    you don't have to worry if your object will move exactly how much the number stored inside the counter
+    
+    just in case you forget, distributive is when  
+    ```a*(b+c) = a*b + a*c```  
+    in this case, multiplication is distributive.
+    ill explain this further down below
 
->if you only need to implement it in a small range. to_const might be better for you.  
 
-## Syntax
+## Standard syntax :
 
-This function is designed to be as similiar as posible to the to_const function. however there are some difference.   
-There are 2 rules in this function usage :
-1. you have to put it inside it's own function.  
-2. you have to add '->' when executing the function.  
+This function is designed to be as similiar as posible to the to_const macro. but there's 1 rule : **you should write it inside the move macro itself**
+#### Syntax :
+```rs
+//code
+    group.move(counter.toConstMove(range),0,<other move macro parameter>)
+//more code
+```
+0 is the Y value. you can flip the X and Y if you want.  
+the "other move macro parameter" is optional. just like regular move syntax
 
-### Syntax :
-
-```spwn
-functionName =(){
-    number = counter.toConstMove(range)
-    group.move(/*insert move function parameter*/)
+if you call it multiple time, it recomended to write it this way for group efficientcy
+```rs
+macroName =(){
+    group.move(counter.toConstMove(range),0,<other move macro parameter>)
 }
 
 //code
--> functionName()
+macroName()
 //more code
+macroName()
+//even more code
 ```
 
-if you only call it once in your program you could just write it as
-```spwn
-//code
--> (){
-    number = counter.toConstMove(range)
-    group.move(/*insert move function parameter*/)
-}()
-//more code
-```
 ### Example :
 
-```spwn
+one time call
+```rs
 count = counter(1i)
-wait(0.5)
 
-tcm =(){
-    cntConst = count.toConstMove(..100)
-    1g.move(cntConst,0,0)
+2g.move(0,10,1)
+1g.move(count.toConstMove(..100),0,2,EASE_IN)
+2g.move(0,10,1)
+```
+
+multiple time call
+```rs
+count = counter(1i)
+
+macro =(){
+    1g.move(0,count.toConstMove(..100))
 }
 
--> tcm()
+macro()
 2g.move(0,10,0)
 wait(0.5)
--> tcm()
+macro()
 wait(0.5)
--> tcm()
+macro()
 ```
 
-if you only call it once
-```spwn
-count = counter(1i)
-wait(0.5)
+>if you have a question or difficulty on implementing this in your code, you can contact me on discord Reamuji#9847 or tag me in the SPWN Server.
 
-2g.move(0,10,0)
-wait(0.5)
--> (){
-    cntConst = count.toConstMove(..100)
-    1g.move(cntConst,0,0)
-}()
-wait(0.5)
-2g.move(0,10,0)
+### Distribution rules
+
+let's take the equation i mentioned earlier   
+```a*(b+c) = a*b + a*c```  
+so we know form this that multiplication is Distributive over addition. which mean this code is valid :
+```rs
+1g.move(5 * count.toConstMove(..100),0)
 ```
-
->__you can find more inside the example file__  
-and if you have difficulty implementing this in your code, you can contact me on discord Reamuji#9847 or tag me in the SPWN Server. but im not sure ill always be there
-
-### Move() seperation rules
-
-I mentioned earlier that if the move() x or y parameter is not 0 or a 'toConstMove' return, it might need to be seperated. actually there's one other input that not require seperation, which is 'toConstMove * /<number/>'. both multiplication and division works here.  
-for example:
-```spwn
-counter = count.toConstMove(..100)
-1g.move(counter *10,0,2.5)
+now lets take a non distributive transformation  
+```a+(b+c) ≠ a+b + a+c```  
+addition isn't distributive over addition, which mean this code is not allowed : 
+```rs
+1g.move(3 + count.toConstMove(..100),0,)
 ```
-This don't need to be seperated
-
-now, i will take the example on limitation and issue and seperate it
- ```spwn
-counter = count.toConstMove(..100)
-1g.move(counter + 10,5,1)
-```
-first i'll let's write it with proper syntax (we're not seperating it yet)
- ```spwn
-//code
--> (){
-    counter = count.toConstMove(..100)
-    1g.move(counter + 10, 5, 1)
-}()
-//more code
-```
-finally, time to seperate it
-```spwn
-//code
--> (){
-    counter = count.toConstMove(..100)
-    1g.move(counter, 0, 1)
-}()
-wait(0,35) //to compromise the toConstMove delay, so the start move together
-1g.move(10,5,1)
-//more code
-```
-it's that simple
-    
-if you want to call it multiple time 
-```spwn
-
-move1g = (){
-    -> (){
-    counter = count.toConstMove(..100)
-    1g.move(counter, 0, 1)
-    }()
-    wait(0,35) //to compromise the toConstMove delay, so the start move together
-    1g.move(10,5,1)
-}
-
-//code
--> move1g()
-wait(2)
--> move1g()
-//more code
-```
+you can use this method to check if something is "distributive over addition" or not  
+```sin(b+c) ≠ sin(b) + sin(c)``` sin is not distributive   
+```2^(b+c) ≠ 2^b + 2^c``` exponentiation is not distributive   
+```10*(b+c)/4 = 10*b/4 + 10*c/4``` multiplication then division is distributive   
     
 ## Brief technical explanation
 
 ### How does it works ?
 
-Thing you might not know is that, this is essentially a binary converter  
-This utilize the fact that any number could be broken up into sum of a bunch 2^i, without ever need repating a number in 'i'
+Unlike toConst that return the value directly, this function is actually just returning a bunch of value that add up to the value.  
+how are the value broken up ? using a binary converter.  
+with binary, we can broken up the value into a bunch of ```2^i``` where ```i``` is any real number. and ```i``` will never be repeated
 
 | number | 2^i sum    | i       | binary  |
 |--------|------------|---------|---------|
@@ -175,13 +120,11 @@ This utilize the fact that any number could be broken up into sum of a bunch 2^i
 | 9      | 1 + 8      | 0, 3    | 0001001 |
 | 69     | 1 + 4 + 64 | 0, 2, 6 | 1000101 |
 
-so as long a number exist in binary, it will be posible to broken up. (which mean all number is posible)
+Notice that ```i``` is correspond to which digit is equal to 1  
+what this function does is like converting a counter to binary, and then convert it back to decimal.  
+but when converting back to decimal, we also returning ```2^i``` value while were adding it back to the counter. 
 
-what this function does is like converting a number to binary, and then convert it back to decimal.  
-but when converting back to decimal, we were activating a bunch of move trigger instead of adding number.  
-we know that sum member would be 2^i, so we could generate move trigger wih value 1,2,4,8,16 etc.
-
-the actual code skip a lot of step for efficiency, but that basically how it's work
+the actual code skip a lot of step, but that basically how it's work
 
 ### Why i can't use it on other trigger ?
 
