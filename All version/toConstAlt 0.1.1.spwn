@@ -1,0 +1,53 @@
+extract obj_props
+extract $
+
+floorLog2 = (num){
+    for result in 1..(1/0){
+        if num < 2^result{
+            return result - 1
+        }
+    }
+}
+
+impl @counter {
+    toConstMove:(
+        self, 
+        #[desc("Array or range of possible output values")] range: @range
+    ) {
+        rangeLowVal = range.end if range.end < range.start else range.start
+        rangeSize = range.end - range.start if range.end > range.start else range.start - range.end   //maybe i should've use abs() instead
+        triggerPathCount = floorLog2(rangeSize)
+
+        -> !{
+//          move the obj to the left most posible point (when all move activated)
+            wait((triggerPathCount + 1) * 0.05)
+            -> return rangeLowVal
+        }!
+
+//      Context splitting - for generating multiple trigger
+//      it's like a for loop, but start executing everything at the same time. 
+        branchMultiverse = (rangeBranch){
+            for val in rangeBranch {
+            ->return val
+            }
+        }
+        i = branchMultiverse((triggerPathCount + 1)..0)
+        
+//      make sure the operation is executed in the right order (but disrupt the multiverse timeline)
+        wait((triggerPathCount - i) * 0.05)
+        j = (2^i)
+
+//      count the counter value
+        if(self >= j + rangeLowVal){
+            self -= j
+            
+//          Waiting for all other timeline finished counting
+            wait((i+1) * 0.05)
+//          Now every timeline (supposed to be) at the same time
+
+//          execute the move trigger and restore the counter value            
+            -> return j
+            self += j
+        }
+    }
+}

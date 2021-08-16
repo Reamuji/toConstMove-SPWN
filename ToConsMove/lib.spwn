@@ -1,0 +1,35 @@
+extract obj_props
+extract $
+
+impl @counter {
+    toConstMove:(
+        self, 
+        #[desc("Array or range of possible output values")] range: @range
+    ){
+        rangeLowVal = range.start if range.end > range.start else range.end
+        rangeSize = abs(range.end - range.start)
+        triggerPathCount = floor(log(rangeSize,2))
+
+        -> !{
+//          move the obj to the left most posible point
+//          can't return same value twice so i add an if else
+            if log(rangeLowVal,2)%1==0 {
+                -> return rangeLowVal - 3 
+                -> return 3 
+            }else{
+                -> return rangeLowVal
+            }
+        }!
+        
+//      i flip the range to flip the order of trigger execution
+        for itt in (triggerPathCount + 1)..0{
+            i = 2^itt
+            -> if self >= i + rangeLowVal{
+                self -= i
+                -> return i
+                wait(0.01)
+                self += i
+            }
+        }
+    }
+}
