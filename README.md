@@ -4,6 +4,9 @@ to_const alternative for move trigger usage. much more group efficient in large 
 >Recomended for range with size 32 and above  
 if you only need to implement it in a small range, to_const is better.  
 
+Idk about other os, but in windows, you can just copy the ToConstMove folder and paste it in inside the libraries folder which located together with "spwn.exe" file,  
+or you could just add it as a module.
+
 ## Limitation     
 
 - **Limited to move trigger X and Y value**
@@ -107,7 +110,7 @@ you can use this method to check if something is "distributive over addition" or
 
 ### How does it works ?
 
-Unlike toConst that return the value directly, this function is actually just returning a bunch of value that add up to the value.  
+Unlike toConst that return the value directly, this macro is actually just returning a bunch of value that add up to the original value.  
 how are the value broken up ? using a binary converter.  
 with binary, we can broken up the value into a bunch of ```2^i``` where ```i``` is any real number. and ```i``` will never be repeated
 
@@ -120,7 +123,7 @@ with binary, we can broken up the value into a bunch of ```2^i``` where ```i``` 
 | 9      | 1 + 8      | 0, 3    | 0001001 |
 | 69     | 1 + 4 + 64 | 0, 2, 6 | 1000101 |
 
-Notice that ```i``` is correspond to which digit is equal to 1  
+Notice that ```i``` is correspond to which digit is equal to 1 in binary form  
 what this function does is like converting a counter to binary, and then convert it back to decimal.  
 but when converting back to decimal, we also returning ```2^i``` value while were adding it back to the counter. 
 
