@@ -4,6 +4,8 @@ to_const alternative for move trigger usage. much more group efficient in large 
 >Recomended for range with size 32 and above  
 if you only need to implement it in a small range, to_const is better.  
 
+>due to GD being a stupid f\*cking shit it might only work in the editor on spwn version 0.6 and below | Please use version 0.1.1 for now which not instant
+
 Idk about other os, but in windows, you can just copy the ToConstMove folder and paste it in inside the libraries folder which located at ```C:\Program Files\spwn\libraries```.  then you could import it with only adding ```import ToConstMove``` in your code  
 
 ## Limitation     
